@@ -12,14 +12,14 @@ point = get_config_arg('point', int, 0)
 
 
 with open('data/train.list', 'w') as f:
-    f.write('data/train/%s.txt' % point)
+    f.write(f'data/train/{point}.txt')
 with open('data/test.list', 'w') as f:
-    f.write('data/test/%s.txt' % point)
+    f.write(f'data/test/{point}.txt')
 process = 'process'
 if is_predict:
     process = 'process_predict'
     with open('data/pred.list', 'w') as f:
-        f.write('data/predict_data/%s.txt' % point)
+        f.write(f'data/predict_data/{point}.txt')
 
 test = 'data/test.list'
 train = 'data/train.list'
@@ -40,11 +40,7 @@ define_py_data_sources2(
     }
 )
 
-batch_size = 6
-
-if is_predict:
-    batch_size = 1
-
+batch_size = 1 if is_predict else 6
 settings(
     batch_size=batch_size,
     learning_rate=0.0001,
@@ -63,13 +59,13 @@ center_data = data_layer(name='data_0', size=TERM_SIZE)
 first_region_nodes = []
 second_region_nodes = []
 counter = 1
-for i in range(region_1_node_num):
-    key = "data_%s" % counter
+for _ in range(region_1_node_num):
+    key = f"data_{counter}"
     first_region_nodes.append(data_layer(name=key, size=TERM_SIZE))
     counter += 1
 
-for j in range(region_2_node_num):
-    key = "data_%s" % counter
+for _ in range(region_2_node_num):
+    key = f"data_{counter}"
     second_region_nodes.append(data_layer(name=key, size=TERM_SIZE))
     counter += 1
 
@@ -115,10 +111,7 @@ res = fc_layer(input=center_concat, size=NODE_NUM, act=ReluActivation(), bias_at
 res = fc_layer(input=[res, center_data], size=NODE_NUM, act=TanhActivation())
 
 output_cost = []
-labels = []
-
-for i in range(TERM_SIZE):
-    labels.append(data_layer('label_%s' % i, size=4))
+labels = [data_layer(f'label_{i}', size=4) for i in range(TERM_SIZE)]
 
 for i in range(TERM_SIZE):
 
@@ -130,10 +123,24 @@ for i in range(TERM_SIZE):
     add_res_layer = res
 
     if i % 2 == 0:
-        add_res_layer = simple_lstm(name='add_res_lstm_%s_layer' % i,input=res, size=NODE_NUM, act=ReluActivation(), bias_param_attr=bias_param)
+        add_res_layer = simple_lstm(
+            name=f'add_res_lstm_{i}_layer',
+            input=res,
+            size=NODE_NUM,
+            act=ReluActivation(),
+            bias_param_attr=bias_param,
+        )
+
         add_res_layer = addto_layer(input=[add_res_layer, res], act=TanhActivation(), bias_attr=bias_param)
     else:
-        res_fc = fc_layer(name='add_res_%s_fc_layer' % i, input=res, size=NODE_NUM, act=ReluActivation(), bias_attr=bias_param)
+        res_fc = fc_layer(
+            name=f'add_res_{i}_fc_layer',
+            input=res,
+            size=NODE_NUM,
+            act=ReluActivation(),
+            bias_attr=bias_param,
+        )
+
         add_res_layer = addto_layer(input=[res, res_fc], act=TanhActivation(), bias_attr=bias_param)
 
     add_nearby_res = nearby_res
@@ -154,7 +161,7 @@ for i in range(TERM_SIZE):
     time_value = fc_layer(input=last_seq(res), size=4, act=SoftmaxActivation())
 
     if not is_predict:
-        ecost = classification_cost(input=time_value, name='cost%s' % i, label=labels[i])
+        ecost = classification_cost(input=time_value, name=f'cost{i}', label=labels[i])
         output_cost.append(ecost)
     else:
         value = maxid_layer(time_value)

@@ -81,10 +81,10 @@ def get_point():
         s = f.readlines()
         for i in s:
             i = map(int, i.rstrip('\n\r').split(' '))
-            point_data['%s' % i[0]] = i[1]
+            point_data[f'{i[0]}'] = i[1]
     with open('GPU_count.txt', 'a+') as f:
         for i in points:
-            line = '%s %s\n' % (i, point_data['%s' % i])
+            line = '%s %s\n' % (i, point_data[f'{i}'])
             f.write(line)
 
 get_point()

@@ -26,7 +26,7 @@ def points_to_point():
 
     with open('Points.txt', 'a+') as f:
         for key in all_points:
-            line = "%s;" % key
+            line = f"{key};"
             line += ','.join(all_points[key])
             line += '\n'
             f.write(line)
@@ -45,7 +45,7 @@ def get_points_count_list():
 
     with open('point_count.txt', 'a+') as f:
         for i in range(328):
-            line = '%s ' % center_point[i]
+            line = f'{center_point[i]} '
             line += '%s\n' % nums[i]
             f.write(line)
 
@@ -61,8 +61,8 @@ def get_points_count_list_2():
             nums.append((point, len(nearby), len(sub)))
     with open('point_count_list_2', 'w+') as f:
         for tp in nums:
-            line = '%s ' % tp[0]
-            line += '%s ' % tp[1]
+            line = f'{tp[0]} '
+            line += f'{tp[1]} '
             line += '%s\n' % tp[2]
             f.write(line)
 
@@ -161,7 +161,7 @@ def create_dataset(filename):
     with open(filename, 'r') as f:
         for line in f.readlines()[1:]:
             line = map(int, line.rstrip('\r\n').split(','))
-            data['%s' % line[0]] = line[1:]
+            data[f'{line[0]}'] = line[1:]
     return data
 
 

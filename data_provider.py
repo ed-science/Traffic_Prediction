@@ -7,15 +7,15 @@ TERM_SIZE = 24
 
 
 def initialize(settings, num, point, **kwargs):
-    s = dict()
+    s = {}
     settings.point = point
     settings.num = num
     for i in range(num):
-        key = 'data_%s' % i
+        key = f'data_{i}'
         s[key] = dense_vector_sequence(TERM_SIZE)
     #s['label'] = integer_value_sequence(TERM_SIZE)
     for i in range(TERM_SIZE):
-        label_key = 'label_%s' % i
+        label_key = f'label_{i}'
         s[label_key] = integer_value(4)
     settings.input_types = s
 
@@ -31,10 +31,10 @@ def process(settings, filename):
             data.append(speed)
             max_len = min(len(speed),max_len)
 
-    for i in range(0,max_len-2*TERM_SIZE, 1):
-        result = dict()
+    for i in range(max_len-2*TERM_SIZE):
+        result = {}
         for j in range(node_num):
-            key = 'data_%s' % j
+            key = f'data_{j}'
             result[key] = [[(data[j][k])/4.0 for k in range(i, i+TERM_SIZE)]]
         # result['label'] = data[0][i+TERM_SIZE] - 1
         # if result['label'] == -1:
@@ -45,7 +45,7 @@ def process(settings, filename):
             if label[j] == 0:
                  label[j] = 1
             label[j] -= 1
-            label_key = 'label_%s' % j
+            label_key = f'label_{j}'
             result[label_key] = label[j]
         # logging.info(result)
         # result['label'] = label
@@ -91,11 +91,11 @@ def process(settings, filename):
 #
 #
 def predict_initialize(settings, num, point, **kwargs):
-    s = dict()
+    s = {}
     settings.point = point
     settings.num = num
     for i in range(num):
-        key = 'data_%s' % i
+        key = f'data_{i}'
         s[key] = dense_vector_sequence(TERM_SIZE)
     settings.input_types = s
 
@@ -106,12 +106,12 @@ def process_predict(settings, filename):
         data = []
         max_len = 0
         node_num = settings.num
-        result = dict()
+        result = {}
         for line in f.readlines():
             speeds = map(int, line.rstrip('\n').split(','))
             data.append(speeds)
             max_len = len(speeds)
         for i in range(node_num):
-            key = 'data_%s' % i
-            result[key] = [[data[i][k]/4.0 for k in range(0, TERM_SIZE)]]
+            key = f'data_{i}'
+            result[key] = [[data[i][k]/4.0 for k in range(TERM_SIZE)]]
         yield result

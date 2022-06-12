@@ -12,7 +12,7 @@ def create_link_list(filename):
         for line in open_file.readlines()[1:]:
             pair_points = map(int, line.rstrip('\r\n').split(','))
 
-            key = '%s' % (pair_points[0])
+            key = f'{pair_points[0]}'
             if key in graph:
                 point_list = graph[key]
                 if pair_points[1] not in point_list:
@@ -21,7 +21,7 @@ def create_link_list(filename):
             else:
                 graph[key] = [pair_points[1]]
 
-            key2 = '%s' % pair_points[1]
+            key2 = f'{pair_points[1]}'
             if key2 in graph:
                 point_list = graph[key2]
                 if pair_points[0] not in point_list:
@@ -33,15 +33,13 @@ def create_link_list(filename):
     all_nodes = []
     for key in graph:
         point_list = graph[key]
-        nodes = {}
         center_node = int(key)
-        nodes['0'] = center_node
-        nodes['1'] = point_list
+        nodes = {'0': center_node, '1': point_list}
         subnodes = []
         for point in point_list:
-            key = '%s' % point
+            key = f'{point}'
             if key in graph:
-                subpoint_list = graph['%s' % point]
+                subpoint_list = graph[f'{point}']
                 for subpoint in subpoint_list:
                     if subpoint not in subnodes and subpoint not in point_list and subpoint != center_node:
                         subnodes.append(subpoint)
@@ -50,10 +48,10 @@ def create_link_list(filename):
 
     with open('two_dist_point', 'w+') as writingFile:
         for node in all_nodes:
-            line = '%s;' % node['0']
-            line += ','.join(['%s' % k for k in node['1']])
+            line = f"{node['0']};"
+            line += ','.join([f'{k}' for k in node['1']])
             line += ';'
-            line += ','.join(['%s' % k for k in node['2']])
+            line += ','.join([f'{k}' for k in node['2']])
             line += '\n'
             writingFile.write(line)
 

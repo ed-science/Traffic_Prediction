@@ -12,8 +12,8 @@ def generate(point, file_name):
         data = map(int, line.rstrip('\r\n;').split(';'))
 
     with open('result.csv', 'a+') as f:
-        line = '%s,' % point
-        line += ','.join(['%s' % (x + 1) for x in data])
+        line = f'{point},'
+        line += ','.join([f'{x + 1}' for x in data])
         line += '\n'
         f.write(line)
 
@@ -29,4 +29,4 @@ if __name__ == '__main__':
         data = f.readlines()
         for point in data:
             point = map(int, point.rstrip('\n\r').split(' '))[0]
-            generate(point, 'result/%s/rank-00000' % point)
+            generate(point, f'result/{point}/rank-00000')

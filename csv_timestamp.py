@@ -10,8 +10,7 @@ def add_timestamp(filename, start, step, num):
 
         timestamps.append(time % 60 + start)
     with open(filename, 'w+') as f:
-        line = 'id,'
-        line += ','.join(['%s' % s for s in timestamps])
+        line = 'id,' + ','.join([f'{s}' for s in timestamps])
         line += '\n'
         f.write(line)
 

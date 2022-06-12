@@ -8,8 +8,7 @@ def convert(node_dict):
     r = len(node_dict)
     nodes = node_dict.keys()
     with open('graph_mat.csv', 'a+') as f:
-        title = " ,"
-        title += ",".join(nodes)
+        title = " ," + ",".join(nodes)
         title += '\n'
         f.write(title)
         for key in node_dict:
@@ -18,7 +17,7 @@ def convert(node_dict):
             for sub_node in sub_nodes:
                 idx = nodes.index(sub_node)
                 line_node[idx] = '1'
-            line = key + ","
+            line = f"{key},"
             line += ",".join(line_node)
             line += '\n'
             f.write(line)
@@ -32,7 +31,7 @@ def get_data(filename):
             link_pair = (pairs[0], pairs[1])
             link_pairs.append(link_pair)
 
-    node = dict()
+    node = {}
     for pair in link_pairs:
         nodes = []
         if pair[0] in node:
@@ -75,7 +74,7 @@ def points_to_point():
 
     with open('Points.txt', 'a+') as f:
         for key in all_points:
-            line = "%s;" % key
+            line = f"{key};"
             line += ','.join(all_points[key])
             line += '\n'
             f.write(line)
@@ -133,13 +132,10 @@ def get_points_distribution_list():
             points = line[1].split(',')
             nums.append(len(points)+1)
             center_point.append(point)
-
-
-
 #    return nums
     with open('point_count.txt', 'a+') as f:
         for i in range(328):
-            line = '%s ' % center_point[i]
+            line = f'{center_point[i]} '
             line += '%s\n' % nums[i]
             f.write(line)
 
@@ -162,7 +158,7 @@ def add_test_files():
     with open('Points.txt', 'r') as f:
         for line in f.readlines():
             one = line.rstrip('\n\r').split(';')[0]
-            file_name.append('%s' % one)
+            file_name.append(f'{one}')
 
     with open('point_list.txt', 'a+') as f:
         for one in file_name:
