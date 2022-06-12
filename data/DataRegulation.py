@@ -103,22 +103,19 @@ def newton_insert_value(data):
         for element in data:
             missing_indexes = []
             exist_values = []
-            i = 0
-            for one in element:
+            for i, one in enumerate(element):
                 if one == '0':
                     missing_indexes.append(i)
                 else:
                     value = int(one)
                     exist_values.append((i, value))
-                i += 1
             fixed_values = newton(exist_values, missing_indexes)
             new_data = []
             for one in exist_values:
                 new_data[one[0]] = one[1]
             for one in fixed_values:
                 new_data[one[0]] = one[1]
-            line = ','.join(new_data)
-            line += '\n'
+            line = ','.join(new_data) + '\n'
             f.write(line)
 
 
@@ -130,22 +127,19 @@ def prepare_data():
             with open('speeds_fill.csv', 'a+') as f:
                 missing_indexes = []
                 exist_values = []
-                i = 0
-                for one in speeds:
+                for i, one in enumerate(speeds):
                     if one == '0':
                         missing_indexes.append(i)
                     else:
                         value = int(one)
                         exist_values.append((i, value))
-                    i += 1
                 fixed_values = newton(exist_values, missing_indexes)
                 new_data = []
                 for one in exist_values:
                     new_data[one[0]] = one[1]
                 for one in fixed_values:
                     new_data[one[0]] = one[1]
-                line = ','.join(new_data)
-                line += '\n'
+                line = ','.join(new_data) + '\n'
                 f.write(line)
 
 

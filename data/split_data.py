@@ -19,11 +19,11 @@ def split_data():
             values = map(int, line.rstrip('\n\r').split(','))
             point = values[0]
             values = values[1:]
-            data['%s' % point] = [values[x] for x in index]
+            data[f'{point}'] = [values[x] for x in index]
     with open('new_speeds.csv', 'a+') as f:
-        for key in data:
-            line = "%s," % key
-            line += ','.join(['%s' % x for x in data[key]])
+        for key, value in data.items():
+            line = f"{key},"
+            line += ','.join([f'{x}' for x in value])
             line += '\n'
             f.write(line)
 
@@ -40,18 +40,17 @@ def split_csv_data(input_file, from_date, to_date, output_name):
         timestamps = map(int, timestamps)
         for line in s[1:]:
             line = map(int, line.rstrip('\n\r').split(','))
-            data['%s' % line[0]] = line[1:]
+            data[f'{line[0]}'] = line[1:]
     from_index = timestamps.index(from_date)
     end_index = timestamps.index(to_date)
     with open(output_name, 'w+') as f:
-        ran = range(from_index, end_index+1, 1)
-        line = 'id,'
-        line += ','.join(['%s' % timestamps[x] for x in ran])
+        ran = range(from_index, end_index+1)
+        line = 'id,' + ','.join([f'{timestamps[x]}' for x in ran])
         line += '\n'
         f.write(line)
-        for point in data:
-            line = '%s,' % point
-            line += ','.join(['%s' % data[point][p] for p in ran])
+        for point, value in data.items():
+            line = f'{point},'
+            line += ','.join([f'{value[p]}' for p in ran])
             line += '\n'
             f.write(line)
 
@@ -206,13 +205,13 @@ def generate_point_list_for_node(num):
         data = f.readlines()
         data_len = len(data)
         per_num = data_len/num
-        for i in range(0,num-1):
+        for i in range(num-1):
             line = ''.join(data[i*per_num:(i+1)*per_num])
-            with open('node%s.train.list' % (i+1), 'w+') as node_file:
+            with open(f'node{i + 1}.train.list', 'w+') as node_file:
                 node_file.write(line)
 
         line = ''.join(data[(num-1)*per_num:])
-        with open('node%s.train.list' % num, 'w+') as node_file:
+        with open(f'node{num}.train.list', 'w+') as node_file:
             node_file.write(line)
 
 if __name__ == '__main__':

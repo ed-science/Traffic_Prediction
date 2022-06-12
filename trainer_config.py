@@ -11,14 +11,14 @@ point = get_config_arg('point', int, 0)
 
 
 with open('data/train.list', 'w') as f:
-    f.write('data/train/%s.txt' % point)
+    f.write(f'data/train/{point}.txt')
 with open('data/test.list', 'w') as f:
-    f.write('data/test/%s.txt' % point)
+    f.write(f'data/test/{point}.txt')
 process = 'process'
 if is_predict:
     process = 'process_predict'
     with open('data/pred.list', 'w') as f:
-        f.write('data/predict_data/%s.txt' % point)
+        f.write(f'data/predict_data/{point}.txt')
 
 test = 'data/test.list'
 train = 'data/train.list'
@@ -39,11 +39,7 @@ define_py_data_sources2(
     }
 )
 
-batch_size = 12
-
-if is_predict:
-    batch_size = 1
-
+batch_size = 1 if is_predict else 12
 settings(
     batch_size=batch_size,
     learning_rate=0.0001,
@@ -62,13 +58,13 @@ center_data = data_layer(name='data_0', size=TERM_SIZE)
 nearby_nodes_inputs = []
 nearby_2_nodes_inputs = []
 counter = 1
-for i in range(nearby_num):
-    key = "data_%s" % counter
+for _ in range(nearby_num):
+    key = f"data_{counter}"
     nearby_nodes_inputs.append(data_layer(name=key, size=TERM_SIZE))
     counter += 1
 
-for j in range(subnode_num):
-    key = "data_%s" % counter
+for _ in range(subnode_num):
+    key = f"data_{counter}"
     nearby_2_nodes_inputs.append(data_layer(name=key, size=TERM_SIZE))
     counter += 1
 
@@ -129,7 +125,6 @@ center_with_nearby_layer = fc_layer(input=[nearby_all_aggregate_layer, center_da
                                     bias_attr=center_bias
                                     )
 
- #
 # center_forward_lstm = simple_lstm(input=center_data, size=1, act=ReluActivation())
 # center_backward_lstm = simple_lstm(input=center_data, size=1, act=ReluActivation(), reverse=True)
 #
@@ -149,21 +144,20 @@ increment_layer = fc_layer(input=[center_data, center_with_nearby_layer, nearby_
 
 # output_result = []
 
-labels = []
-
-for i in range(TERM_SIZE):
-    labels.append(data_layer('label_%s' % i, size=4))
-
+labels = [data_layer(f'label_{i}', size=4) for i in range(TERM_SIZE)]
 
 SIZE = TERM_SIZE
 # forward_layer = con_layers
 
-for i in range(0, TERM_SIZE):
-    bias_attrs_tmp_1 = ParameterAttribute(name='bias_attr_tmp_1_%s' % i,
-                                          learning_rate=1.,
-                                          initial_mean=0.,
-                                          l2_rate=0.,
-                                          initial_std=0.001)
+for i in range(TERM_SIZE):
+    bias_attrs_tmp_1 = ParameterAttribute(
+        name=f'bias_attr_tmp_1_{i}',
+        learning_rate=1.0,
+        initial_mean=0.0,
+        l2_rate=0.0,
+        initial_std=0.001,
+    )
+
     # para_attr_tmp_1 = ParameterAttribute(name='para_attr_tmp_1_%s' % i,
     #                                      initial_mean=0.,
     #                                      learning_rate=2.,
@@ -188,11 +182,14 @@ for i in range(0, TERM_SIZE):
     con_layers = fc_layer(input=con_layers, size=NODE_NUM*4, act=ReluActivation())
     result_aggrerate_layer = last_seq(con_layers)
 
-    final_bias = ParameterAttribute(name='final_bias_%s' % i,
-                                    momentum=0.0001,
-                                    l2_rate=0.,
-                                    initial_std=0.001,
-                                    initial_mean=0.)
+    final_bias = ParameterAttribute(
+        name=f'final_bias_{i}',
+        momentum=0.0001,
+        l2_rate=0.0,
+        initial_std=0.001,
+        initial_mean=0.0,
+    )
+
 
     final_layer = fc_layer(input=result_aggrerate_layer,
                            size=4*NODE_NUM,
@@ -201,7 +198,7 @@ for i in range(0, TERM_SIZE):
     time_value = fc_layer(input=final_layer, size=4, act=SoftmaxActivation())
 
     if not is_predict:
-        ecost = classification_cost(input=time_value, name='cost%s' % i, label=labels[i])
+        ecost = classification_cost(input=time_value, name=f'cost{i}', label=labels[i])
         costs.append(ecost)
     else:
         value = maxid_layer(time_value)
